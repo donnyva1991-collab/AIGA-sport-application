@@ -1,53 +1,29 @@
-'use strict';
+const { Progress, User } = require('#models');
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('progress', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER,
-      },
-      clientId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: { model: 'users', key: 'id' },
-        onDelete: 'CASCADE',
-      },
-      metric: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      value: {
-        type: Sequelize.FLOAT,
-        allowNull: false,
-      },
-      recordedAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW,
-      },
-      notes: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-      deletedAt: {
-        allowNull: true,
-        type: Sequelize.DATE,
-      },
-    });
-  },
-
-  down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('progress');
-  },
+  run: async () => {
+    try {
+      const user = await User.findOne(); // Предполагаем, что есть хотя бы один пользователь
+      if (user) {
+        await Progress.bulkCreate([
+          {
+            clientId: user.id,
+            metric: 'wins',
+            value: 3,
+            notes: 'First fighting practice'
+          },
+          {
+            clientId: user.id,
+            metric: 'body weight',
+            value: 70,
+            notes: 'Workout completed'
+          }
+        ]);
+        console.log('Progress seeded');
+      }
+    } catch (error) {
+      console.error('Progress seeder error:', error);
+      throw error;
+    }
+  }
 };
