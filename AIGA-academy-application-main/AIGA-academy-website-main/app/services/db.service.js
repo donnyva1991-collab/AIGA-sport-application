@@ -51,7 +51,8 @@ function DBService() {
 	};
 
 	return {
-		start: _start
+	  start: _start,
+	  stop: async () => await connection.close()
 	};
 }
 
