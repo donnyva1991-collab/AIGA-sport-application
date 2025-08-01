@@ -11,4 +11,6 @@ require('/CoachClient');
 require('/Progress');
 require('/Product');
 require('/Achievement');
+
 // Add your models here ..
+models.forEach((model) => require(model));
