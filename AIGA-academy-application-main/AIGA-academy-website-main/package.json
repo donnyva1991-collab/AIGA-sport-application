@@ -4,13 +4,13 @@
 	"author": "Nurlan Aligaziz <aligaziznu@gmail.com>",
 	"license": "MIT",
 	"scripts": {
-		"start": "node app/app.js",
-		"db:migrate": "node migrator/start.js",
-		"production": "cross-env NODE_ENV=production babel-node ./app/app.js",
-		"db:migrate": "babel-node ./migrator/start.js",
-		"db:seed": "babel-node ./migrator/seeder.js",
-		"lint": "eslint",
-		"lint:fix": "eslint --fix ."
+		"scripts": {
+  "start": "node app/app.js",
+  "db:migrate": "node migrator/start.js",
+  "db:seed": "node migrator/seeder.js",
+  "deploy": "node migrator/start.js && node app/app.js",
+  "lint": "eslint",
+  "lint:fix": "eslint --fix ."
 	},
 	"dependencies": {
 		"bcrypt": "^5.0.0",
