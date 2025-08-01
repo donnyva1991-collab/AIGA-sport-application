@@ -1,9 +1,6 @@
 module.exports = {
-	versions: {
-		// 'latest' should be a string of a current API version.
-		latest: "v1",
-		// 'all' should contain strings of 
-		// all your API versions.
-		all: ["v1"]
-	}
-}
+  versions: {
+    latest: 'v1',
+    all: ['v1', 'v2'] // Поддержка будущих версий
+  }
+};
