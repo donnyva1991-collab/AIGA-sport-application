@@ -74,8 +74,14 @@ module.exports = function LessonController() {
       return createErrorResponse({ res, error, status: error.cause?.status || 500 });
     }
   };
+  return {
+  createLesson: _createLesson,
+  bookLesson: _bookLesson,
+  validateBooking: _validateBooking,
+  getLessons: _getLessons,
+  getMonthlySchedule: _getMonthlySchedule
+};
 
-  return { createLesson: _createLesson, bookLesson: _bookLesson, validateBooking: _validateBooking, getLessons: _getLessons };
 };
 const _getMonthlySchedule = async (req, res) => {
   try {
@@ -103,4 +109,11 @@ const _getMonthlySchedule = async (req, res) => {
   } catch (error) {
     return createErrorResponse({ res, error, status: error.cause?.status || 500 });
   }
+};
+return {
+  createLesson: _createLesson,
+  bookLesson: _bookLesson,
+  validateBooking: _validateBooking,
+  getLessons: _getLessons,
+  getMonthlySchedule: _getMonthlySchedule
 };
