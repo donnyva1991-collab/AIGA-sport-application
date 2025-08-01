@@ -119,12 +119,9 @@ process.on('uncaughtException', (error) => {
 async function startServer() {
   try {
     await _beforeStart();
-    const port = process.env.PORT || serverConfig.port || 3000;
     server.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`);
     });
-
-    // Инициализация сокетов после успешного старта
     initSocket(server);
   } catch (error) {
     console.error('Server failed to start:', error);
