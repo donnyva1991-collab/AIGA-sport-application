@@ -28,7 +28,6 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.10.0",
-		"babel-plugin-module-resolver": "^5.0.0",
 		"cross-env": "^7.0.3",
 		"eslint": "^9.10.0",
 		"globals": "^15.9.0",
