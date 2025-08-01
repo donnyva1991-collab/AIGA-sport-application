@@ -1,51 +1,43 @@
-/**
- * Middleware for app routes initialization.
- */
-
-// API options.
+const express = require('express');
+const router = express.Router();
 const apiOptions = require('#configs/api');
-// Routes:
 const apiRoutes = require('#routes/api');
 const webRoutes = require('#routes/web');
-// Policies:
 const accessTokenMiddleware = require('#policies/accessToken.policy');
 const refreshTokenMiddleware = require('#policies/refreshToken.policy');
-const chatRoutes = require('./chatRoutes');
-router.use('/chat', chatRoutes);
-// Mapper of routes to controllers.
+const bankRoutes = require('./api/v1/bankRoutes');
+const chatRoutes = require('./api/v1/chatRoutes');
+const lessonRoutes = require('./api/v1/lessonRoutes');
+const clientRoutes = require('./api/v1/clientRoutes');
+const productRoutes = require('./api/v1/productRoutes');
+const scheduleRoutes = require('./api/v1/scheduleRoutes');
 const mapRoutes = require('express-routes-mapper');
 
+router.use('/bank', bankRoutes);
+router.use('/chat', chatRoutes);
+router.use('/lesson', lessonRoutes);
+router.use('/client', clientRoutes);
+router.use('/products', productRoutes);
+router.use('/schedule', scheduleRoutes);
 
-module.exports = _setUpRoutes;
+module.exports = function _setUpRoutes(options = {}) {
+  try {
+    const app = options?.app;
 
-function _setUpRoutes(options={}) {
-	try {
-		const app = options?.app;
+    apiOptions.versions.all.forEach(versionString => {
+      app.all(`/api/${versionString}/private/*`, accessTokenMiddleware);
+      app.use(`/api/${versionString}/auth/refresh`, refreshTokenMiddleware);
+      app.use(`/api/${versionString}/auth/logout`, refreshTokenMiddleware);
+      app.use(`/api/${versionString}`, mapRoutes(apiRoutes(versionString).public, 'app/controllers/api/'));
+      app.use(`/api/${versionString}/private`, mapRoutes(apiRoutes(versionString).private, 'app/controllers/api/'));
+    });
 
-		apiOptions.versions.all.map(versionString => {
-			// Secure private API routes with JWT access token middleware.
-			app.all(`/api/${versionString}/private/*`, accessTokenMiddleware);
-
-			// Secure refresh route and logout with JWT refresh token middleware:
-			app.use(`/api/${versionString}/auth/refresh`, refreshTokenMiddleware);
-			app.use(`/api/${versionString}/auth/logout`, refreshTokenMiddleware);
-
-
-			// Set API routes for express application
-			app.use(`/api/${versionString}`, mapRoutes(apiRoutes(versionString).public, 'app/controllers/api/'));
-			app.use(`/api/${versionString}/private`, mapRoutes(apiRoutes(versionString).private, 'app/controllers/api/'));
-		});
-
-		// Set web routes for Express appliction.
-		app.use('/', mapRoutes(webRoutes.public, `app/controllers/web/`));
-
-		// Everything's ok, continue.
-		return (req, res, next)=>next();
-	}
-	catch(error) {
-		const err = new Error(`Could not setup routes: ${error.message}`);
-		err.name = error?.name;
-		err.code = error?.code;
-		throw err;
-	}
-}
+    app.use('/', mapRoutes(webRoutes.public, `app/controllers/web/`));
+    return (req, res, next) => next();
+  } catch (error) {
+    const err = new Error(`Could not setup routes: ${error.message}`);
+    err.name = error?.name;
+    err.code = error?.code;
+    throw err;
+  }
+};
