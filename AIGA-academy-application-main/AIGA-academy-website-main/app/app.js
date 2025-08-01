@@ -14,7 +14,7 @@ const environments = require('#configs/environments');
 const DB = require('#services/db.service');
 const serverConfig = require('#configs/server');
 const routes = require('#routes/');
-
+const port = process.env.PORT || serverConfig.port || 8080;
 // Инициализация Express приложения и HTTP сервера
 const app = express();
 const server = http.Server(app);
