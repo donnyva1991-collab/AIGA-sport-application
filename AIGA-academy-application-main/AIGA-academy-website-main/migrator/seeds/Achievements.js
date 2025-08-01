@@ -1,49 +1,27 @@
-'use strict';
+const { Achievement, User } = require('#models');
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('achievements', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER,
-      },
-      clientId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: { model: 'users', key: 'id' },
-        onDelete: 'CASCADE',
-      },
-      title: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      description: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
-      achievedAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW,
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-      deletedAt: {
-        allowNull: true,
-        type: Sequelize.DATE,
-      },
-    });
-  },
-
-  down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('achievements');
-  },
+  run: async () => {
+    try {
+      const user = await User.findOne(); // Предполагаем, что есть пользователь
+      if (user) {
+        await Achievement.bulkCreate([
+          {
+            clientId: user.id,
+            title: 'Red belt',
+            description: 'Completed red belt'
+          },
+          {
+            clientId: user.id,
+            title: '50 wins',
+            description: 'Completed 50 wins in jiu-jitsu'
+          }
+        ]);
+        console.log('Achievements seeded');
+      }
+    } catch (error) {
+      console.error('Achievements seeder error:', error);
+      throw error;
+    }
+  }
 };
