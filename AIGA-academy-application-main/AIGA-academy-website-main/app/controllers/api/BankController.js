@@ -7,7 +7,9 @@ module.exports = BankController;
 
 function BankController() {
   const validateAmount = [
-   body('amount').isFloat({ min: 6000, max: 300000 }).withMessage('Amount must be between 6000 and 300000 for gym services'),
+    body('amount')
+      .isFloat({ min: 100, max: 100000 })
+      .withMessage('Amount must be between 100 and 100000 for gym services')
       .custom((value) => {
         if (!/^\d+(\.\d{1,2})?$/.test(value.toString())) {
           throw new Error('Amount must have at most 2 decimal places');
@@ -63,6 +65,11 @@ function BankController() {
         body('toUserId')
           .isInt()
           .withMessage('toUserId must be an integer')
+          .custom(async (toUserId) => {
+            const user = await User.findByPk(toUserId);
+            if (!user) throw new Error('Recipient not found');
+            return true;
+          }),
       ].map((check) => check.run(req));
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -98,6 +105,6 @@ function BankController() {
     deposit: _deposit,
     withdraw: _withdraw,
     transfer: _transfer,
-    getHistory: _getHistory
+    getHistory: _getHistory,
   };
 }
