@@ -1,8 +1,14 @@
 /*
- * Import all models, that you want to use in application.
+ * Populate this file with models, that you want to migrate in db
  */
-require('./User');
-require('./DisabledRefreshToken');
-require('./messege');
-require('./Transactions')
-// Add your models here ...
+require('/User');
+require('/DisabledRefreshToken');
+require('/Transactions');
+require('/Message');
+require('/Lesson');
+require('/Booking');
+require('/CoachClient');
+require('/Progress');
+require('/Product');
+require('/Achievement');
+// Add your models here ..
