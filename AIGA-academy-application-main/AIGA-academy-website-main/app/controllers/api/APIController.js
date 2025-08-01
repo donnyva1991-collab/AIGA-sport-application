@@ -39,11 +39,6 @@ function APIController() {
 
 	const _getStatus = (req, res) => {
 		try {
-			// Try making some faulty operation here,
-			// to see how error will be displayed:
-			
-			// Like this TypeError.
-			// ({}).test();
 
 			// Otherwise it will successfully send operational status.
 			return createOKResponse({
