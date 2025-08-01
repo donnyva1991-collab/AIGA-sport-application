@@ -1,30 +1,33 @@
-// Import config from .env file.
 require('dotenv').config();
-// Models to migrate.
-require('./models');
-// Connection to database
 const db = require('#services/db.service');
-
+const users = require('./seeds/users');
+const products = require('./seeds/Product');
+const progress = require('./seeds/Progress');
+const achievements = require('./seeds/Achievements');
+const transactions = require('./seeds/Transactions');
+require('./models');
 
 async function _main() {
-	try {
-		if (process.env.NODE_ENV !== 'development') {
-			const error = new Error("Can not make any actions in non-dev env.");
-			throw error;
-		}
+  try {
+    if (process.env.NODE_ENV !== 'development') {
+      throw new Error('Can only migrate and seed in development environment.');
+    }
 
-		// Set 'force' to true if you want to rewrite database.
-		const force = true;
-		await db.migrate(process.env.NODE_ENV, force);
-		
-		console.info('All models migrated.');
-		process.exit(0);
-	}
-	catch(error) {
-		console.error('Migrator error:', error);
-		process.exit(1);
-	}
+    const DB = await db.service(process.env.NODE_ENV).start();
+    await db.migrate(process.env.NODE_ENV, true);
+
+    await users.run();
+    await products.run();
+    await progress.run();
+    await achievements.run();
+    await transactions.run();
+
+    console.info('All models migrated and seeded.');
+    process.exit(0);
+  } catch (error) {
+    console.error('Migrator error:', error);
+    process.exit(1);
+  }
 }
 
-// Start.
 _main();
