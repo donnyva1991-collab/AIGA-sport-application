@@ -26,31 +26,30 @@ function ChatController() {
   ];
 
   const _sendMessage = async (req, res) => {
-    try {
-      await Promise.all(validateMessage.map((check) => check.run(req)));
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        throw Object.assign(new Err(errors.array()[0].msg), { name: 'ValidationError', status: 400 });
-      }
-
-      const fromUserId = req.token.id;
-      const { toUserId, text } = req.body;
-
-      const message = await Message.create({
-        fromUserId,
-        toUserId,
-        text,
-        room: null, // Приватный чат
-      });
-
-      return createOKResponse({
-        res,
-        content: { message },
-      });
-    } catch (error) {
-      return createErrorResponse({ res, error });
+  try {
+    await Promise.all(validateMessage.map((check) => check.run(req)));
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      throw Object.assign(new Err(errors.array()[0].msg), { name: 'ValidationError', status: 400 });
     }
-  };
+
+    const fromUserId = req.token.id;
+    const { toUserId, text } = req.body;
+    const toUser = await User.findByPk(toUserId);
+    if (!toUser) throw new Err('Recipient not found', 404);
+
+    const message = await Message.create({
+      fromUserId,
+      toUserId,
+      text,
+      room: null,
+    });
+
+    return createOKResponse({ res, content: { message } });
+  } catch (error) {
+    return createErrorResponse({ res, error });
+  }
+};
 
   const _getDialog = async (req, res) => {
     try {
