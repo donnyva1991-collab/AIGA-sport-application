@@ -34,6 +34,11 @@ const User = database.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    coins: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    },
     balance: {
       type: DataTypes.FLOAT,
       allowNull: false,
