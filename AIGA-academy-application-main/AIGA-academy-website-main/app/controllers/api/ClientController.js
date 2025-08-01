@@ -52,38 +52,52 @@ module.exports = function ClientController() {
   };
 
   const _addProgress = async (req, res) => {
-    try {
-      await validateProgress.map((check) => check.run(req));
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        throw new Error(errors.array()[0].msg, { cause: { status: 400 } });
-      }
-      const coachId = req.token.id;
-      const clientId = parseInt(req.params.clientId);
-      const { metric, value, notes } = req.body;
-      const progress = await clientFacade.addClientProgress({ coachId, clientId, metric, value, notes });
-      return createOKResponse({ res, content: { progress } });
-    } catch (error) {
-      return createErrorResponse({ res, error, status: error.cause?.status || 500 });
+  try {
+    await validateProgress.map((check) => check.run(req));
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      throw new Error(errors.array()[0].msg, { cause: { status: 400 } });
     }
-  };
+    const coachId = req.token.id;
+    const clientId = parseInt(req.params.clientId);
+    const { metric, value, notes } = req.body;
+    const client = await User.findByPk(clientId);
+    if (!client) throw new Error('Client not found', { cause: { status: 404 } });
+    const coachClient = await CoachClient.findOne({ where: { coachId, clientId } });
+    if (!coachClient) throw new Error('Unauthorized: Not your client', { cause: { status: 403 } });
+    const progress = await Progress.create({ clientId, metric, value, notes });
+    // Логика начисления коинов (например, 10 коинов за новый прогресс)
+    client.coins += 10;
+    await client.save();
+    return createOKResponse({ res, content: { progress, coins: client.coins } });
+  } catch (error) {
+    return createErrorResponse({ res, error, status: error.cause?.status || 500 });
+  }
+};
 
-  const _addAchievement = async (req, res) => {
-    try {
-      await validateAchievement.map((check) => check.run(req));
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        throw new Error(errors.array()[0].msg, { cause: { status: 400 } });
-      }
-      const coachId = req.token.id;
-      const clientId = parseInt(req.params.clientId);
-      const { title, description } = req.body;
-      const achievement = await clientFacade.addClientAchievement({ coachId, clientId, title, description });
-      return createOKResponse({ res, content: { achievement } });
-    } catch (error) {
-      return createErrorResponse({ res, error, status: error.cause?.status || 500 });
+const _addAchievement = async (req, res) => {
+  try {
+    await validateAchievement.map((check) => check.run(req));
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      throw new Error(errors.array()[0].msg, { cause: { status: 400 } });
     }
-  };
+    const coachId = req.token.id;
+    const clientId = parseInt(req.params.clientId);
+    const { title, description } = req.body;
+    const client = await User.findByPk(clientId);
+    if (!client) throw new Error('Client not found', { cause: { status: 404 } });
+    const coachClient = await CoachClient.findOne({ where: { coachId, clientId } });
+    if (!coachClient) throw new Error('Unauthorized: Not your client', { cause: { status: 403 } });
+    const achievement = await Achievement.create({ clientId, title, description });
+    // Логика начисления коинов (например, 20 коинов за ачивку)
+    client.coins += 20;
+    await client.save();
+    return createOKResponse({ res, content: { achievement, coins: client.coins } });
+  } catch (error) {
+    return createErrorResponse({ res, error, status: error.cause?.status || 500 });
+  }
+};
 
   return {
     getDashboard: _getDashboard,
