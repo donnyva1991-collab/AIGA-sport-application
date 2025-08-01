@@ -1,11 +1,11 @@
 {
-	"name": "nodejs-express-jwt",
+	"name": "AIGA-academy-application",
 	"version": "1.0.2",
-	"author": "Mark Khramko <markkhramko@gmail.com>",
+	"author": "Nurlan Aligaziz <aligaziznu@gmail.com>",
 	"license": "MIT",
 	"scripts": {
-		"start": "babel-node ./app/app.js",
-		"dev": "cross-env NODE_ENV=development nodemon",
+		"start": "node app/app.js",
+		"db:migrate": "node migrator/start.js",
 		"production": "cross-env NODE_ENV=production babel-node ./app/app.js",
 		"db:migrate": "babel-node ./migrator/start.js",
 		"db:seed": "babel-node ./migrator/seeder.js",
@@ -27,10 +27,6 @@
 		"sequelize": "^6.37.3"
 	},
 	"devDependencies": {
-		"@babel/cli": "^7.12.10",
-		"@babel/core": "^7.12.10",
-		"@babel/node": "^7.12.10",
-		"@babel/preset-env": "^7.12.11",
 		"@eslint/js": "^9.10.0",
 		"babel-plugin-module-resolver": "^5.0.0",
 		"cross-env": "^7.0.3",
