@@ -9,5 +9,6 @@ require('#models/Lesson');
 require('#models/Booking');
 require('#models/CoachClient');
 require('#models/Progress');
+require('#models/Product');
 require('#models/Achievement');
 // Add your models here ...
